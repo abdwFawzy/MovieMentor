@@ -16,9 +16,10 @@ public class MovieRunnerAverage{
         SecondRatings sr = new SecondRatings("data/ratedmoviesfull.csv","data/ratings.csv");
         System.out.println(sr.getMovieSize());
         System.out.println(sr.getRaterSize());
-        ArrayList<Rating> ratings = sr.getAverageRatings(12);
-        Collections.sort(ratings);
-        for (Rating rating : ratings)
+        HashSet<Rating> ratings = sr.getAverageRatings(12);
+        ArrayList<Rating> ratingsList = new ArrayList<Rating>(ratings);
+        Collections.sort(ratingsList);
+        for (Rating rating : ratingsList)
         {
             System.out.println(rating.getValue() + "|" + sr.getTitle(rating.getItem()));
         }

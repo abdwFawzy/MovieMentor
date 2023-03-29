@@ -11,7 +11,7 @@ import edu.duke.*;
 import org.apache.commons.csv.*;
 public class SecondRatings extends FirstRatings {
     private ArrayList<Movie> myMovies;
-    private ArrayList<Rater> myRaters;
+    public ArrayList<EfficientRater> myRaters;
     private String ratersFileName;
     private String moviesFileName;
     public SecondRatings() {
@@ -36,11 +36,10 @@ public class SecondRatings extends FirstRatings {
     private double find_sum_of_ratings_for_movie(String movie_id)
     {
         double count = 0;
-        FileResource fr = new FileResource(ratersFileName);
-        for (CSVRecord currRec : fr.getCSVParser())
+        for (EfficientRater rater : myRaters)
         {
-            if (currRec.get("movie_id").equals(movie_id))
-                count += Double.parseDouble(currRec.get("rating"));
+            if (rater.hasRating(movie_id))
+                count += rater.getRating(movie_id);
         }
         return count;
     }
@@ -50,15 +49,22 @@ public class SecondRatings extends FirstRatings {
             return 0;
         return find_sum_of_ratings_for_movie(movieID) / (double) get_movie_rating_count(ratersFileName, movieID);
     }
-    public ArrayList<Rating> getAverageRatings(int minimalRatings)
+    public HashSet<Rating> getAverageRatings(int minimalRatings)
     {
-        ArrayList<Rating> ratings = new ArrayList<Rating>();
-        for (Movie movie : myMovies)
+        HashSet<Rating> ratings = new HashSet<Rating>();
+        HashSet<String> movies = new HashSet<String>();
+        for (EfficientRater rater : myRaters)
         {
-            String movie_id = movie.getID();
-            double rating = getAverageByID(movie_id, minimalRatings);
-            if (rating > 0)
-                ratings.add(new Rating(movie_id, rating));
+            for (String movie_id : rater.getItemsRated())
+            {
+                if (!movies.contains(movie_id))
+                {
+                    double rating = getAverageByID(movie_id, minimalRatings);
+                    if (rating > 0)
+                        ratings.add(new Rating(movie_id, rating));
+                    movies.add(movie_id);
+                }
+            }
         }
         return ratings;
     }
