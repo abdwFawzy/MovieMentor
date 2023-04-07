@@ -1,7 +1,7 @@
 import edu.duke.*;
 import java.util.*;
 import org.apache.commons.csv.*;
-public abstract class FirstRatings {
+public  class FirstRatings {
 	private	String filenameShort;
 	private	String filenameFull; 
 	public ArrayList<Movie> shortMovies;
@@ -33,32 +33,30 @@ public abstract class FirstRatings {
 //        }
 //        return false;
 //    }
-    public  ArrayList<EfficientRater> loadRaters(String FileName)
-    {
-		ArrayList<EfficientRater> raters = new ArrayList<EfficientRater>();
-        FileResource fr = new FileResource(FileName);
-		for (CSVRecord currRec : fr.getCSVParser())
-		{
-            String rater_id = currRec.get("rater_id");
-            // you need to check if that rater_id is in raters or not 
-            EfficientRater rater;
-            int index = getEfficientRaterIndex(raters,rater_id);
-            if (index == -1)
-            {
-                rater =  new EfficientRater(rater_id);
-                raters.add(rater);
-                index = getEfficientRaterIndex(raters, rater_id);
+       public ArrayList<EfficientRater> loadRaters(String filename) {
+            ArrayList<EfficientRater> raters = new ArrayList<EfficientRater>();
+            FileResource fr = new FileResource(filename);
+            CSVParser parser = fr.getCSVParser();
+            for (CSVRecord record : parser) {
+                String raterID = record.get("rater_id");
+                String movieID = record.get("movie_id");
+                double rating = Double.parseDouble(record.get("rating"));
+                boolean alreadyAdded = false;
+                for (EfficientRater rater : raters) {
+                    if (rater.getID().equals(raterID)) {
+                        rater.addRating(movieID, rating);
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!alreadyAdded) {
+                    EfficientRater rater = new EfficientRater(raterID);
+                    rater.addRating(movieID, rating);
+                    raters.add(rater);
+                }
             }
-            else
-            {
-                index =  getEfficientRaterIndex(raters, rater_id);
-            }
-            String movie = currRec.get("movie_id");
-            double rating = Double.parseDouble(currRec.get("rating"));
-            raters.get(index).addRating(movie, rating);
-		}
-		return raters;
-    }
+            return raters;
+        } 
     public int count_movies(String FileName)
     {
         ArrayList<String> movies = new ArrayList<String>();
@@ -139,16 +137,27 @@ public abstract class FirstRatings {
         }
         return -1;
     }
-    public  ArrayList<Movie> loadMovies(String FileName)
-	{
-		ArrayList<Movie> movies = new ArrayList<Movie>();
-		FileResource fr = new FileResource(FileName);
-		for (CSVRecord currRec : fr.getCSVParser())
-		{
-			movies.add(new Movie(currRec));
-		}
-		return movies;
-	}
+    public ArrayList<Movie> loadMovies(String filename) {
+        ArrayList<Movie> movieList = new ArrayList<Movie>();
+        FileResource fr = new FileResource(filename);
+        CSVParser parser = fr.getCSVParser();
+        
+        for (CSVRecord record : parser) {
+            String id = record.get("id");
+            String title = record.get("title");
+            String year = record.get("year");
+            String genres = record.get("genre");
+            String director = record.get("director");
+            String country = record.get("country");
+            String poster = record.get("poster");
+            int minutes = Integer.parseInt(record.get("minutes"));
+            
+            Movie movie = new Movie(id, title, year, genres, director, country, poster, minutes);
+            movieList.add(movie);
+        }
+        
+        return movieList;
+    }
 	public HashMap<String, ArrayList<Movie>> directorFilter() {
 	    HashMap<String, ArrayList<Movie>> directorsMap = new HashMap<String, ArrayList<Movie>>();
 	    HashMap<String, Integer> directorCount = new HashMap<String, Integer>();

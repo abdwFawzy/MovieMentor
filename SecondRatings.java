@@ -1,7 +1,12 @@
 
 /**
  * Write a description of SecondRatings here.
- * 
+ * The SecondRatings class is a class that reads movie and rating data from CSV files and provides methods to access information about movies
+ * and their ratings. It extends the FirstRatings class and contains an ArrayList of movies and an ArrayList of efficient raters.
+ * It also includes methods to get the size of the movie and rater lists, to find the average rating of a movie with a specified ID,
+ * to get a set of all ratings above a specified minimal rating, to get the title of a movie with a specified ID,
+ * and to get the ID of a movie with a specified title.
+ * This class is used in conjunction with the MovieRunnerAverage class to provide information about movies and their ratings.
  * @author (abalrhman fawzy) 
  * @version (3/27/2023)
  */
